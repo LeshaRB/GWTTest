@@ -14,8 +14,6 @@
     <!-- Other module inherits -->
     <inherits name='com.gwtplatform.dispatch.Dispatch' />
     <inherits name='com.gwtplatform.mvp.MvpWithEntryPoint' />
-    <inherits name="com.arcbees.analytics.Analytics"/>
-    <inherits name="com.wallissoftware.pushstate.PushState" />
 
     <source path='client' />
     <source path='shared' />

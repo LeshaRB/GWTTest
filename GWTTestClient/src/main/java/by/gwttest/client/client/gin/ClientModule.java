@@ -8,8 +8,6 @@ import com.gwtplatform.mvp.client.annotations.UnauthorizedPlace;
 import com.gwtplatform.mvp.client.gin.AbstractPresenterModule;
 import com.gwtplatform.mvp.client.gin.DefaultModule;
 import com.gwtplatform.mvp.shared.proxy.RouteTokenFormatter;
-import com.arcbees.analytics.client.AnalyticsModule;
-import by.gwttest.client.client.place.NavigationTracker;
 
 /**
  * See more on setting up the PlaceManager on <a
@@ -26,7 +24,5 @@ public class ClientModule extends AbstractPresenterModule {
         bindConstant().annotatedWith(ErrorPlace.class).to(NameTokens.home);
         bindConstant().annotatedWith(UnauthorizedPlace.class).to(NameTokens.home);
         
-        install(new AnalyticsModule.Builder("UX-XXXX-Y").build());
-        bind(NavigationTracker.class).asEagerSingleton();
     }
 }
