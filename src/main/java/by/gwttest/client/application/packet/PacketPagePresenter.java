@@ -1,7 +1,5 @@
 package by.gwttest.client.application.packet;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import by.gwttest.client.application.ApplicationPresenter;
@@ -31,9 +29,10 @@ import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 
 public class PacketPagePresenter extends
 		Presenter<PacketPagePresenter.MyView, PacketPagePresenter.MyProxy> {
-	
+
 	private final PacketServiceAsync packetService = GWT
 			.create(PacketService.class);
+	private Date dateToday = null;
 
 	interface MyView extends View {
 		public ValueTextBox getPacketSize();
@@ -61,7 +60,6 @@ public class PacketPagePresenter extends
 		getView().getPacketSize().setText("16");
 		getView().getTextLog().setEnabled(false);
 		statusReadyToSend = false;
-		getView().getSendBtn().addClickHandler(btnStartStopHandler());
 	}
 
 	@Inject
@@ -95,37 +93,34 @@ public class PacketPagePresenter extends
 	}
 
 	private void startSendPacket() {
-		operationTime.startTimer();
 		Timer timer = new Timer() {
 			@Override
 			public void run() {
 				operationTime.startTimer();
 				String str = randomString.nextString();
 				String textLog = getView().getTextLog().getText();
-				
-					packetService.sendPacketMSGToServer(str,
+				packetService.sendPacketMSGToServer(str,
 						new AsyncCallback<Date>() {
 							@Override
-							public void onFailure(Throwable caught) {
-//								getView().getTextLog().setText(
-//										new StringBuilder().append(textLog)
-//												.append("\n" + "ERORR!!!")
-//												.toString());
+							public void onSuccess(Date date) {
+								dateToday = date;
 							}
 
 							@Override
-							public void onSuccess(Date date) {
-//								StringBuilder sb = new StringBuilder();
-//								String text = sb
-//										.append(textLog)
-//										.append((!textLog.isEmpty()) ? "\n":"")
-//										.append(DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss").format(Date date))
-//										.append(" time = ")
-//										.append(operationTime.getTime(new Date())).toString();
-//								getView().getTextLog().setText(text);
+							public void onFailure(Throwable caught) {
+								dateToday = null;
 							}
 						});
-					
+				if (dateToday != null) {
+					StringBuilder sb = new StringBuilder(textLog)
+							.append((!textLog.isEmpty()) ? "\n" : "")
+							.append(DateTimeFormat.getFormat(
+									"yyyy-MM-dd HH:mm:ss").format(dateToday))
+							.append(" time = ")
+							.append(operationTime.getTime(dateToday));
+					getView().getTextLog().setText(sb.toString());
+				}
+
 				if (!statusReadyToSend)
 					cancel();
 			}
@@ -140,6 +135,6 @@ public class PacketPagePresenter extends
 
 	@Override
 	public void onBind() {
-
+		getView().getSendBtn().addClickHandler(btnStartStopHandler());
 	}
 }

@@ -1,7 +1,6 @@
 package by.gwttest.server;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import by.gwttest.client.service.PacketService;
 
@@ -15,13 +14,7 @@ public class PacketServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Date sendPacketMSGToServer(String packet)
 			throws IllegalArgumentException {
-		// String serverInfo = getServletContext().getServerInfo();
-		// String userAgent = getThreadLocalRequest().getHeader("User-Agent");
-		try {
-			TimeUnit.MILLISECONDS.sleep(500);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		getServletContext().log("LOG_PACKET_MSG = " + packet);
 		return new Date();
 	}
 }
