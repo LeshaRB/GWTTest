@@ -112,12 +112,12 @@ public class PacketPagePresenter extends
 							}
 						});
 				if (dateToday != null) {
+					operationTime.stopTimer();
 					StringBuilder sb = new StringBuilder(textLog)
 							.append((!textLog.isEmpty()) ? "\n" : "")
 							.append(DateTimeFormat.getFormat(
 									"yyyy-MM-dd HH:mm:ss").format(dateToday))
-							.append(" time = ")
-							.append(operationTime.getTime(dateToday));
+							.append(" time = ").append(operationTime.getTime());
 					getView().getTextLog().setText(sb.toString());
 				}
 
