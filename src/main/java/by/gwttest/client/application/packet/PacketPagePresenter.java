@@ -32,7 +32,6 @@ public class PacketPagePresenter extends
 
 	private final PacketServiceAsync packetService = GWT
 			.create(PacketService.class);
-	private Date dateToday = null;
 
 	interface MyView extends View {
 		public ValueTextBox getPacketSize();
@@ -57,7 +56,7 @@ public class PacketPagePresenter extends
 
 	private void init() {
 		getView().getSendBtn().setText(btnStart);
-		getView().getPacketSize().setText("16");
+		getView().getPacketSize().setText("64");
 		getView().getTextLog().setEnabled(false);
 		statusReadyToSend = false;
 	}
@@ -86,8 +85,9 @@ public class PacketPagePresenter extends
 								.getPacketSize().getText()));
 						startSendPacket();
 					}
-				} else
+				} else {
 					Window.alert("Packet size must be between 16 and 1024!");
+				}
 			}
 		};
 	}
@@ -98,31 +98,34 @@ public class PacketPagePresenter extends
 			public void run() {
 				operationTime.startTimer();
 				String str = randomString.nextString();
-				String textLog = getView().getTextLog().getText();
+				final String textLog = getView().getTextLog().getText();
 				packetService.sendPacketMSGToServer(str,
 						new AsyncCallback<Date>() {
 							@Override
-							public void onSuccess(Date date) {
-								dateToday = date;
+							public void onFailure(Throwable caught) {
+								StringBuilder sb = new StringBuilder(textLog)
+										.append("\n ERROR");
+								getView().getTextLog().setText(sb.toString());
 							}
 
 							@Override
-							public void onFailure(Throwable caught) {
-								dateToday = null;
+							public void onSuccess(Date date) {
+								operationTime.stopTimer();
+								StringBuilder sb = new StringBuilder(textLog)
+										.append((!textLog.isEmpty()) ? "\n"
+												: "")
+										.append(DateTimeFormat.getFormat(
+												"yyyy-MM-dd HH:mm:ss").format(
+												date)).append(" time = ")
+										.append(operationTime.getTime());
+								getView().getTextLog().setText(sb.toString());
+
 							}
 						});
-				if (dateToday != null) {
-					operationTime.stopTimer();
-					StringBuilder sb = new StringBuilder(textLog)
-							.append((!textLog.isEmpty()) ? "\n" : "")
-							.append(DateTimeFormat.getFormat(
-									"yyyy-MM-dd HH:mm:ss").format(dateToday))
-							.append(" time = ").append(operationTime.getTime());
-					getView().getTextLog().setText(sb.toString());
-				}
 
-				if (!statusReadyToSend)
+				if (!statusReadyToSend) {
 					cancel();
+				}
 			}
 
 		};
